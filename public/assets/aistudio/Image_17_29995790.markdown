@@ -1,0 +1,245 @@
+---
+name: SG Transit Next
+colors:
+  surface: '#f8f9ff'
+  surface-dim: '#cbdbf5'
+  surface-bright: '#f8f9ff'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#eff4ff'
+  surface-container: '#e5eeff'
+  surface-container-high: '#dce9ff'
+  surface-container-highest: '#d3e4fe'
+  on-surface: '#0b1c30'
+  on-surface-variant: '#45474c'
+  inverse-surface: '#213145'
+  inverse-on-surface: '#eaf1ff'
+  outline: '#75777d'
+  outline-variant: '#c5c6cd'
+  surface-tint: '#545f73'
+  primary: '#091426'
+  on-primary: '#ffffff'
+  primary-container: '#1e293b'
+  on-primary-container: '#8590a6'
+  inverse-primary: '#bcc7de'
+  secondary: '#515f74'
+  on-secondary: '#ffffff'
+  secondary-container: '#d5e3fc'
+  on-secondary-container: '#57657a'
+  tertiary: '#001910'
+  on-tertiary: '#ffffff'
+  tertiary-container: '#0a2f22'
+  on-tertiary-container: '#739887'
+  error: '#ba1a1a'
+  on-error: '#ffffff'
+  error-container: '#ffdad6'
+  on-error-container: '#93000a'
+  primary-fixed: '#d8e3fb'
+  primary-fixed-dim: '#bcc7de'
+  on-primary-fixed: '#111c2d'
+  on-primary-fixed-variant: '#3c475a'
+  secondary-fixed: '#d5e3fc'
+  secondary-fixed-dim: '#b9c7df'
+  on-secondary-fixed: '#0d1c2e'
+  on-secondary-fixed-variant: '#3a485b'
+  tertiary-fixed: '#c4ebd8'
+  tertiary-fixed-dim: '#a9cfbc'
+  on-tertiary-fixed: '#002116'
+  on-tertiary-fixed-variant: '#2b4d3f'
+  background: '#f8f9ff'
+  on-background: '#0b1c30'
+  surface-variant: '#d3e4fe'
+typography:
+  display-lg:
+    fontFamily: Inter
+    fontSize: 40px
+    fontWeight: '700'
+    lineHeight: 44px
+    letterSpacing: -0.03em
+  display-lg-mobile:
+    fontFamily: Inter
+    fontSize: 32px
+    fontWeight: '700'
+    lineHeight: 36px
+    letterSpacing: -0.025em
+  headline-lg:
+    fontFamily: Inter
+    fontSize: 28px
+    fontWeight: '700'
+    lineHeight: 34px
+    letterSpacing: -0.02em
+  headline-md:
+    fontFamily: Inter
+    fontSize: 22px
+    fontWeight: '600'
+    lineHeight: 28px
+    letterSpacing: -0.015em
+  headline-sm:
+    fontFamily: Inter
+    fontSize: 18px
+    fontWeight: '600'
+    lineHeight: 24px
+    letterSpacing: -0.01em
+  title-md:
+    fontFamily: Inter
+    fontSize: 16px
+    fontWeight: '600'
+    lineHeight: 22px
+    letterSpacing: -0.01em
+  body-lg:
+    fontFamily: Inter
+    fontSize: 16px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: -0.005em
+  body-md:
+    fontFamily: Inter
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+    letterSpacing: 0em
+  body-sm:
+    fontFamily: Inter
+    fontSize: 12px
+    fontWeight: '400'
+    lineHeight: 16px
+    letterSpacing: 0.005em
+  label-md:
+    fontFamily: Inter
+    fontSize: 12px
+    fontWeight: '600'
+    lineHeight: 16px
+    letterSpacing: 0.02em
+  label-sm:
+    fontFamily: Inter
+    fontSize: 11px
+    fontWeight: '600'
+    lineHeight: 14px
+    letterSpacing: 0.04em
+  metric-eta:
+    fontFamily: Inter
+    fontSize: 24px
+    fontWeight: '700'
+    lineHeight: 28px
+    letterSpacing: -0.02em
+  metric-badge:
+    fontFamily: Inter
+    fontSize: 10px
+    fontWeight: '700'
+    lineHeight: 12px
+    letterSpacing: 0.06em
+rounded:
+  sm: 0.125rem
+  DEFAULT: 0.25rem
+  md: 0.375rem
+  lg: 0.5rem
+  xl: 0.75rem
+  full: 9999px
+spacing:
+  gutter: 0.75rem
+  gutter-desktop: 1.25rem
+  margin: 1rem
+  margin-desktop: 2rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 0.75rem
+  space-lg: 1rem
+  space-xl: 1.5rem
+---
+
+## Brand & Style
+
+This design system is engineered for the high-density, fast-paced commuter environment of Singapore. It balances high-throughput utility with restrained, civic elegance. The system prioritizes immediate glanceability under varying lighting conditions—from direct equatorial sunlight at outdoor bus stops to the stark fluorescent illumination of MRT concourses.
+
+The design movement is **Civic Functionalism**: an evolution of Swiss rationalism tailored for mobile software. It discards playful ornamentation, skeuomorphism, and vibrant consumer-tech neons in favor of disciplined data hierarchy, typographic density, spatial precision, and high-legibility telemetry. 
+
+Every UI element is tuned to reduce cognitive load during transit:
+- **Instant Recognition:** Critical transit data (arrival countdowns, occupancy, vehicle deck types) takes absolute precedence over branding or decorative graphics.
+- **Civic Restraint:** Calm, architectural slate and zinc neutrals create an unobtrusive backdrop that feels systematic, reliable, and institutional.
+- **Physical Clarity:** High-contrast lineation and low-elevation surfaces mimic physical urban signage and physical wayfinding panels.
+
+## Colors
+
+The palette avoids saturated neon hues and tech-forward purples/magentas, anchoring itself in architectural neutrals and muted functional indicators. 
+
+### Palette Application
+- **Primary Canvas (`#F8FAFC` to `#FFFFFF`):** High-clarity off-white and cool zinc tones provide glare-resistant readability on commuter screens.
+- **Primary Ink (`#0F172A` & `#1E293B`):** Deep slate provides near-black typographic contrast compliant with strict WCAG AAA guidelines for small metrics and arrival numbers.
+- **Secondary Slate (`#475569`):** Subdued functional slate for intermediate metadata, structural borders (`#E2E8F0`), and secondary actions.
+- **Neutral Rail (`#64748B`):** Structural neutral for inactive states, divider lines, and peripheral route details.
+
+### Functional Transit Status Tokens
+Occupancy and status cues rely on muted, earthy chromatic signals calibrated to standard Singapore public transit datasets:
+- **Available / Seats Available (SEA):** Muted Sage (`#3F6253` on light fill `#ECFDF5`). Communicates reassurance without electric brightness.
+- **Standing Available (SDA):** Warm Ochre Amber (`#B45309` on light fill `#FFFBEB`). Pragmatic, high-visibility operational caution.
+- **Limited Standing (LSD) / Arriving Now:** Muted Terracotta Brick (`#991B1B` on light fill `#FEF2F2`). Urgent, high-alert readability without harsh eye strain.
+- **Vehicle Type Indicators:** Subtle Cool Slate fill (`#F1F5F9`) with `#334155` text for WAB (Wheelchair Accessible), SD (Single Deck), DD (Double Deck), and BD (Bendy).
+
+## Typography
+
+The type system is powered entirely by Inter, deployed with tabular numbers (`tnum`) enabled across all numeric and telemetry surfaces. This prevents layout jitter during real-time countdown updates.
+
+### Typographic Principles
+- **Dense Data Presentation:** Strict line-height-to-font-size ratios guarantee that compact bus timing lists do not bleed into excessive vertical space.
+- **Glance Metric System:** The `metric-eta` token is reserved specifically for the leading arrival minutes (e.g., `2m`, `Arr`, `14m`). It is optimized to align cleanly adjacent to the `metric-badge` indicators.
+- **Upper-Case Badge Formats:** Metadata tags (`WAB`, `DD`, `SD`, `BD`) strictly utilize `label-sm` or `metric-badge` with uppercase transformation and positive tracking (`+0.04em` to `+0.06em`) to ensure legibility inside 16px to 20px badge chips.
+
+## Layout & Spacing
+
+The layout operates on a disciplined 4px base increment, biased toward compact, vertical information density. Commuters need multiple bus routes visible on viewport load without aggressive scrolling.
+
+### Grid & Fluid Boundaries
+- **Mobile Handheld (360px – 430px):** Single-column stacked data feed. Screen margins fixed at `1rem` (16px), with list gutters at `0.75rem` (12px). Fixed top search/telemetry filter with edge-to-edge scrollable feed.
+- **Tablet / Responsive Slate (600px – 1024px):** Split-view architecture. Left-hand master transit list fixed at 380px; remaining space dedicated to the live vector route map and schematic stop diagram.
+- **Desktop Concierge (> 1024px):** Contained max-width layout (1200px) with 3-column triage: Active Line Selector (left), Live Station Arrival Board (center, 640px), and Real-time Incident & Capacity Matrix (right).
+
+### Density Rules
+Padding within cards and row items conforms strictly to `space-sm` (8px) vertically and `space-md` (12px) horizontally to maximize row counts per fold while maintaining a minimum 44px hit-target for all interactable cells.
+
+## Elevation & Depth
+
+This system avoids expressive drop shadows and high-blur glassmorphic treatments. Depth is achieved via **structural borders and planar surface layering**, ensuring maximum battery efficiency and fluid 120Hz frame rates across all mobile chipsets.
+
+### Surface Tiers
+1. **Level 0 (Canvas):** Cool base stone `#F8FAFC`.
+2. **Level 1 (Card & Row Surfaces):** Pure White `#FFFFFF` bound by a crisp 1px solid border (`#E2E8F0`).
+3. **Level 2 (Pinned Telemetry & Sticky Bars):** `#FFFFFF` with a 1px border-b `#CBD5E1` and an imperceptible ambient contact shadow (`rgba(15, 23, 42, 0.04) 0px 2px 4px`).
+4. **Level 3 (Modal Sheets & Route Filters):** `#FFFFFF` bound by a 1px stroke (`#94A3B8`) paired with an anchored directional drop: `0 8px 24px -4px rgba(15, 23, 42, 0.08)`.
+
+Dividers between tabular items are crisp 1px strokes in `#F1F5F9` with zero offset.
+
+## Shapes
+
+The geometric identity is calibrated to `1` (Soft, 4px baseline). Transit cards, arrival chips, and control blocks use deliberate, modest radiuses rather than broad rounded curves or circular pills.
+
+### Geometry Hierarchy
+- **Standard Surfaces (Cards, Search Inputs, Panels):** `0.25rem` (4px). Provides an orderly, ledger-like architectural structure.
+- **Containers & Action Panels (`rounded-lg`):** `0.5rem` (8px) for sheet drawers, route summary hero cards, and modal dialogs.
+- **Transit Telemetry Badges:** `0.25rem` (4px) with interior 2px padding for tight-fitting tag bounding.
+- **Segmented Commuter Switches:** Inset 4px squircle toggles within an outer 6px container.
+
+## Components
+
+### Bus Timing & Arrival Cards
+- **Structure:** Multi-slot inline row. Left-aligned bus service number (`display-lg-mobile` equivalent, bold slate `#0F172A`).
+- **Arrival Triad:** Three successive arrival columns (Next, 2nd Bus, 3rd Bus). Each column houses:
+  - Countdown time (`metric-eta`, e.g., `Arr`, `3m`, `12m`).
+  - Occupancy Bar Indicator: 3px-tall indicator bar using status tokens (`#3F6253` for SEA, `#B45309` for SDA, `#991B1B` for LSD).
+  - Vehicle Attributes: Monospaced uppercase sub-badges (`DD`, `WAB`) rendered in `metric-badge`.
+
+### Badges & Pill Metadata
+- **Occupancy Badges:**
+  - `Seats Available (SEA)`: Background `#ECFDF5`, text `#166534`, border `#BBF7D0`.
+  - `Standing Available (SDA)`: Background `#FFFBEB`, text `#854D0E`, border `#FDE68A`.
+  - `Limited Standing (LSD)`: Background `#FEF2F2`, text `#991B1B`, border `#FECACA`.
+- **Accessibility & Deck Badges:** Solid `#F1F5F9` background, `#334155` stroke `#CBD5E1`, text `#1E293B`.
+
+### Buttons & Quick Controls
+- **Universal Icon Controls:** 40x40px or 32x32px square buttons with 4px border radius. 1px border in `#CBD5E1`, white surface, active state shifts to `#F1F5F9`.
+- **Primary Service Button:** Solid `#1E293B` background, white label, 0.25rem radius, zero shadow, high tactile press state (`#0F172A`).
+- **Segmented Direction Selectors:** Compact dual-tab switch (e.g., "To Marina Centre" vs "To Woodlands") encased in a 1px slate frame with high contrast active state.
+
+### Input Fields & Search Bars
+- Background `#FFFFFF`, border 1px solid `#CBD5E1`, focus ring 1px solid `#1E293B` with zero outer blur. Monospaced placeholder text support for direct 5-digit bus stop codes (e.g., `01012`, `64009`).
+
+### Live Telemetry Indicators
+- **Real-Time Pulse:** A static 6px solid dot using Sage (`#3F6253`) indicates active live GPS synchronization. If data is estimated/scheduled, the dot defaults to slate `#94A3B8`.

@@ -1,0 +1,6 @@
+{
+  "name": "SG Transit Next",
+  "description": "High-density real-time Singapore bus and rail transit tracker built with Civic Functionalism, live arrival triads, crowd telemetry, and schematic route diagrams.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
