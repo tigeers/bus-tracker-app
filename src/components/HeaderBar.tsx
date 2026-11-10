@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RefreshCw, Radio, HelpCircle, Smartphone, Tablet, Monitor, Bell, Layers } from 'lucide-react';
+import { RefreshCw, Radio, HelpCircle, Smartphone, Tablet, Monitor, Bell, Layers, Server } from 'lucide-react';
 
 interface HeaderBarProps {
   viewMode: 'auto' | 'mobile' | 'tablet' | 'desktop';
@@ -10,6 +10,7 @@ interface HeaderBarProps {
   onOpenLegend: () => void;
   activeAlightAlarmStop: string | null;
   onOpenAlightModal: () => void;
+  onOpenDatamallApi: () => void;
 }
 
 export const HeaderBar: React.FC<HeaderBarProps> = ({
@@ -21,6 +22,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   onOpenLegend,
   activeAlightAlarmStop,
   onOpenAlightModal,
+  onOpenDatamallApi,
 }) => {
   const [sgtTime, setSgtTime] = useState<string>('');
 
@@ -165,6 +167,17 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-[#005ec4]' : ''}`} />
             <span className="font-mono text-[11px] hidden xs:inline">{refreshCountdown}s</span>
+          </button>
+
+          {/* LTA Datamall API Status & Tester Button */}
+          <button
+            onClick={onOpenDatamallApi}
+            className="flex items-center gap-1.5 h-8 px-2 rounded border border-[#cbd5e1] bg-white text-xs font-semibold text-[#1e293b] hover:bg-[#f1f5f9] transition-colors"
+            title="LTA Datamall Serverless Connection (/api)"
+            aria-label="LTA Datamall Serverless Endpoints"
+          >
+            <Server className="w-3.5 h-3.5 text-[#005ec4]" />
+            <span className="hidden md:inline font-mono text-[11px]">LTA API</span>
           </button>
 
           {/* Telemetry Standards Help Button */}

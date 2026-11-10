@@ -8,6 +8,7 @@ import { SchematicRouteMap } from './components/SchematicRouteMap';
 import { RailIncidentMatrix } from './components/RailIncidentMatrix';
 import { LegendModal } from './components/LegendModal';
 import { AlightNotificationModal } from './components/AlightNotificationModal';
+import { DatamallApiModal } from './components/DatamallApiModal';
 import {
   MapPin,
   RefreshCw,
@@ -42,6 +43,7 @@ export default function App() {
   // Modals & Alarms
   const [isLegendOpen, setIsLegendOpen] = useState<boolean>(false);
   const [isAlightModalOpen, setIsAlightModalOpen] = useState<boolean>(false);
+  const [isDatamallApiOpen, setIsDatamallApiOpen] = useState<boolean>(false);
   const [activeAlightStop, setActiveAlightStop] = useState<RouteStop | null>(null);
 
   // Favorites in LocalStorage
@@ -217,6 +219,7 @@ export default function App() {
         onOpenLegend={() => setIsLegendOpen(true)}
         activeAlightAlarmStop={activeAlightStop?.stopCode || null}
         onOpenAlightModal={() => setIsAlightModalOpen(true)}
+        onOpenDatamallApi={() => setIsDatamallApiOpen(true)}
       />
 
       {/* Main Container */}
@@ -573,6 +576,12 @@ export default function App() {
         onClose={() => setIsAlightModalOpen(false)}
         activeStop={activeAlightStop}
         onCancelAlarm={handleCancelAlarm}
+      />
+
+      {/* LTA Datamall Serverless Connection Modal */}
+      <DatamallApiModal
+        isOpen={isDatamallApiOpen}
+        onClose={() => setIsDatamallApiOpen(false)}
       />
     </div>
   );
