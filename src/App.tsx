@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { INITIAL_BUS_STOPS, RAIL_LINES_STATUS, COMMUTER_ADVISORIES } from './data/singaporeTransitData';
-import { BusStop, BusServiceArrival, RouteStop, RailLineStatus, CommuterAdvisory } from './types/transit';
+import { BusStop, BusServiceArrival, RouteStop } from './types/transit';
 import { HeaderBar } from './components/HeaderBar';
 import { ArrivalCard } from './components/ArrivalCard';
 import { BusStopSelector } from './components/BusStopSelector';
@@ -9,20 +9,21 @@ import { RailIncidentMatrix } from './components/RailIncidentMatrix';
 import { LegendModal } from './components/LegendModal';
 import { AlightNotificationModal } from './components/AlightNotificationModal';
 import { DatamallApiModal } from './components/DatamallApiModal';
+import { SearchModal } from './components/SearchModal';
+import { FirstTimeUserBanner } from './components/FirstTimeUserBanner';
+import { BottomNavBar, ActiveTab } from './components/BottomNavBar';
 import {
   MapPin,
   RefreshCw,
   Search,
-  Filter,
-  ArrowRightLeft,
+  ArrowUpDown,
   Navigation,
   Compass,
   Train,
-  ShieldCheck,
-  AlertCircle,
-  Eye,
   Bus,
-  Layers
+  Filter,
+  Check,
+  Sparkles
 } from 'lucide-react';
 
 const REFRESH_INTERVAL_SECONDS = 15;
@@ -33,14 +34,15 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'favorites' | 'sea_only' | 'dd_only' | 'wab_only'>('all');
   const [direction, setDirection] = useState<1 | 2>(1);
-  const [viewMode, setViewMode] = useState<'auto' | 'mobile' | 'tablet' | 'desktop'>('auto');
   const [selectedService, setSelectedService] = useState<BusServiceArrival | null>(null);
+  const [activeTab, setActiveTab] = useState<ActiveTab>('board');
 
   // Auto-refresh countdown
   const [refreshCountdown, setRefreshCountdown] = useState<number>(REFRESH_INTERVAL_SECONDS);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  // Modals & Alarms
+  // Modals & Navigation
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isLegendOpen, setIsLegendOpen] = useState<boolean>(false);
   const [isAlightModalOpen, setIsAlightModalOpen] = useState<boolean>(false);
   const [isDatamallApiOpen, setIsDatamallApiOpen] = useState<boolean>(false);
@@ -101,7 +103,6 @@ export default function App() {
             ...svc,
             nextBuses: svc.nextBuses.map((b) => {
               if (b.etaSeconds <= 5) {
-                // Bus rolls over into Arr, stays or shifts
                 return { ...b, etaSeconds: Math.max(0, b.etaSeconds - 1) };
               }
               return { ...b, etaSeconds: b.etaSeconds - 1 };
@@ -118,7 +119,6 @@ export default function App() {
   const triggerTelemetrySync = () => {
     setIsRefreshing(true);
     setTimeout(() => {
-      // Perturb or refresh arrival telemetry slightly for realism
       setStops((prevStops) =>
         prevStops.map((stop) => ({
           ...stop,
@@ -126,7 +126,6 @@ export default function App() {
             const next1 = svc.nextBuses[0];
             const next2 = svc.nextBuses[1];
             const next3 = svc.nextBuses[2];
-            // If first bus arrived (0s), cycle forward
             if (next1.etaSeconds <= 0) {
               return {
                 ...svc,
@@ -157,7 +156,6 @@ export default function App() {
   // Filtered bus services on the active stop
   const filteredServices = useMemo(() => {
     return currentStop.services.filter((svc) => {
-      // Search query check
       if (searchQuery.trim()) {
         const query = searchQuery.trim().toLowerCase();
         const matchesService = svc.serviceNo.toLowerCase().includes(query);
@@ -165,7 +163,6 @@ export default function App() {
         if (!matchesService && !matchesDest) return false;
       }
 
-      // Quick Filter chips
       if (activeFilter === 'favorites' && !favorites.includes(svc.serviceNo)) {
         return false;
       }
@@ -192,49 +189,195 @@ export default function App() {
     setActiveAlightStop(null);
   };
 
-  // Device frame wrapper classes depending on viewMode
-  const getContainerClasses = () => {
-    switch (viewMode) {
-      case 'mobile':
-        return 'max-w-[410px] mx-auto border-x border-[#cbd5e1] min-h-[92vh] shadow-2xl bg-[#f8f9ff] my-4 rounded-xl overflow-hidden';
-      case 'tablet':
-        return 'max-w-[840px] mx-auto border border-[#cbd5e1] min-h-[92vh] shadow-xl bg-[#f8f9ff] my-4 rounded-xl overflow-hidden';
-      case 'desktop':
-        return 'max-w-[1280px] mx-auto min-h-[92vh]';
-      case 'auto':
-      default:
-        return 'max-w-7xl mx-auto min-h-[92vh]';
+  const handleServiceSelect = (service: BusServiceArrival) => {
+    setSelectedService(service);
+    // On small screens, if user is in board, switch to route tab for immediate feedback
+    if (window.innerWidth < 768) {
+      setActiveTab('route');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff] text-[#0b1c30] flex flex-col font-sans">
-      {/* Sticky Civic Header */}
+    <div className="min-h-screen bg-[#fafafa] text-zinc-900 flex flex-col font-sans selection:bg-zinc-200 selection:text-zinc-900">
+      {/* Sleek Top Navigation */}
       <HeaderBar
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onOpenSearch={() => setIsSearchOpen(true)}
         onRefresh={triggerTelemetrySync}
         isRefreshing={isRefreshing}
         refreshCountdown={refreshCountdown}
         onOpenLegend={() => setIsLegendOpen(true)}
+        onOpenDatamallApi={() => setIsDatamallApiOpen(true)}
         activeAlightAlarmStop={activeAlightStop?.stopCode || null}
         onOpenAlightModal={() => setIsAlightModalOpen(true)}
-        onOpenDatamallApi={() => setIsDatamallApiOpen(true)}
+        currentStopName={currentStop.name}
+        currentStopCode={currentStop.code}
       />
 
-      {/* Main Container */}
-      <main className={`flex-1 p-3 sm:p-4 ${getContainerClasses()}`}>
-        {/* If Mobile view mode is active, display mobile-specific stacked view */}
-        {viewMode === 'mobile' ? (
-          <div className="space-y-3">
-            {/* Bus Stop Selector */}
-            <div className="bg-white border border-[#cbd5e1] rounded p-3 shadow-xs">
+      {/* Main Content Area (with bottom padding for mobile tab bar) */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3.5 sm:p-5 pb-20 md:pb-6">
+        {/* First-Time User Onboarding Banner */}
+        <FirstTimeUserBanner onLearnMore={() => setIsLegendOpen(true)} />
+
+        {/* Tab View: Live Board (Default) */}
+        {activeTab === 'board' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            {/* Left 7 Columns: Active Station Hero + Arrival Feed */}
+            <div className="lg:col-span-7 space-y-3.5">
+              {/* Station Hero Card */}
+              <div className="bg-white border border-zinc-200/90 rounded-xl p-4 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-zinc-800 bg-zinc-100 px-2 py-0.5 rounded border border-zinc-200">
+                        {currentStop.code}
+                      </span>
+                      <h1 className="text-base sm:text-lg font-bold text-zinc-950 truncate tracking-tight">
+                        {currentStop.name}
+                      </h1>
+                    </div>
+                    <p className="text-xs text-zinc-500 mt-1 flex items-center gap-2">
+                      <span>{currentStop.road}</span>
+                      <span>·</span>
+                      <span>{filteredServices.length} Bus lines active</span>
+                    </p>
+                  </div>
+
+                  {/* Direction Switch & Change Stop */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setDirection((d) => (d === 1 ? 2 : 1))}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 text-xs font-medium text-zinc-700 transition-colors"
+                      title="Switch direction"
+                    >
+                      <ArrowUpDown className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>{direction === 1 ? 'Inbound' : 'Outbound'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => setIsSearchOpen(true)}
+                      className="px-2.5 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-medium hover:bg-zinc-800 transition-colors shadow-2xs"
+                    >
+                      Switch Stop
+                    </button>
+                  </div>
+                </div>
+
+                {/* Filter Bar */}
+                <div className="mt-3 flex items-center justify-between flex-wrap gap-2 text-xs">
+                  <div className="flex items-center gap-1 bg-zinc-100/80 p-0.5 rounded-lg">
+                    <button
+                      onClick={() => setActiveFilter('all')}
+                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                        activeFilter === 'all'
+                          ? 'bg-white text-zinc-950 font-semibold shadow-2xs'
+                          : 'text-zinc-500 hover:text-zinc-900'
+                      }`}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setActiveFilter('favorites')}
+                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                        activeFilter === 'favorites'
+                          ? 'bg-white text-zinc-950 font-semibold shadow-2xs'
+                          : 'text-zinc-500 hover:text-zinc-900'
+                      }`}
+                    >
+                      Pinned ({favorites.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveFilter('sea_only')}
+                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                        activeFilter === 'sea_only'
+                          ? 'bg-white text-zinc-950 font-semibold shadow-2xs'
+                          : 'text-zinc-500 hover:text-zinc-900'
+                      }`}
+                    >
+                      Seats Available
+                    </button>
+                    <button
+                      onClick={() => setActiveFilter('dd_only')}
+                      className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                        activeFilter === 'dd_only'
+                          ? 'bg-white text-zinc-950 font-semibold shadow-2xs'
+                          : 'text-zinc-500 hover:text-zinc-900'
+                      }`}
+                    >
+                      Double Deck
+                    </button>
+                  </div>
+
+                  {/* Telemetry Indicator */}
+                  <div className="text-[11px] text-zinc-400 flex items-center gap-1.5 font-mono">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                    <span>Live Telemetry</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Arrival Cards List */}
+              <div className="space-y-2">
+                {filteredServices.length === 0 ? (
+                  <div className="py-12 text-center rounded-xl border border-dashed border-zinc-200 bg-white p-6">
+                    <Bus className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-zinc-800">No services match this filter</p>
+                    <p className="text-xs text-zinc-400 mt-1">Try resetting the filter chips above.</p>
+                    <button
+                      onClick={() => setActiveFilter('all')}
+                      className="mt-3 px-3 py-1.5 text-xs font-medium rounded-lg bg-zinc-900 text-white"
+                    >
+                      Show All Buses
+                    </button>
+                  </div>
+                ) : (
+                  filteredServices.map((svc) => (
+                    <ArrivalCard
+                      key={svc.serviceNo}
+                      service={svc}
+                      isFavorite={favorites.includes(svc.serviceNo)}
+                      onToggleFavorite={toggleFavorite}
+                      isSelected={selectedService?.serviceNo === svc.serviceNo}
+                      onSelect={handleServiceSelect}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Right 5 Columns (Desktop): Selected Service Route Progression */}
+            <div className="hidden lg:block lg:col-span-5 h-[620px] sticky top-16">
+              <SchematicRouteMap
+                selectedService={selectedService}
+                currentStopCode={currentStop.code}
+                onSetAlightAlarm={handleSetAlightAlarm}
+                activeAlightAlarmStop={activeAlightStop?.stopCode || null}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Tab View: Nearby Stops */}
+        {activeTab === 'stops' && (
+          <div className="max-w-2xl mx-auto space-y-4">
+            <div className="bg-white border border-zinc-200 rounded-xl p-4 sm:p-5 shadow-2xs">
+              <div className="border-b border-zinc-100 pb-3 mb-4">
+                <h2 className="text-base font-bold text-zinc-950">
+                  Nearby Bus Stops & Interchanges
+                </h2>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  Select any transit station to view its live bus countdown board.
+                </p>
+              </div>
+
               <BusStopSelector
                 stops={stops}
                 selectedStop={currentStop}
                 onSelectStop={(stop) => {
                   setSelectedStopCode(stop.code);
                   if (stop.services.length > 0) setSelectedService(stop.services[0]);
+                  setActiveTab('board');
                 }}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -245,326 +388,57 @@ export default function App() {
                 onDirectionToggle={() => setDirection((d) => (d === 1 ? 2 : 1))}
               />
             </div>
-
-            {/* Active Stop Arrival Board */}
-            <div className="bg-white border border-[#cbd5e1] rounded p-3 shadow-xs">
-              <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-2 mb-2">
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-mono text-xs font-bold text-[#475569] bg-[#f1f5f9] px-1.5 py-0.5 rounded border border-[#cbd5e1]">
-                      {currentStop.code}
-                    </span>
-                    <h2 className="text-sm font-bold text-[#0f172a] truncate">
-                      {currentStop.name}
-                    </h2>
-                  </div>
-                  <p className="text-[11px] text-[#64748b] mt-0.5">{currentStop.road}</p>
-                </div>
-                <span className="font-mono text-[11px] font-bold text-[#0f172a] bg-[#eff4ff] px-2 py-0.5 rounded border border-[#d5e3fc]">
-                  {filteredServices.length} Lines
-                </span>
-              </div>
-
-              {/* Service Cards Feed */}
-              <div className="space-y-1">
-                {filteredServices.length === 0 ? (
-                  <div className="text-center py-6 text-xs text-[#64748b]">
-                    No bus services match the active filters.
-                  </div>
-                ) : (
-                  filteredServices.map((svc) => (
-                    <ArrivalCard
-                      key={svc.serviceNo}
-                      service={svc}
-                      isFavorite={favorites.includes(svc.serviceNo)}
-                      onToggleFavorite={toggleFavorite}
-                      isSelected={selectedService?.serviceNo === svc.serviceNo}
-                      onSelect={(s) => setSelectedService(s)}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Mobile Route Schematic Drawer / Card */}
-            <div className="bg-white border border-[#cbd5e1] rounded shadow-xs overflow-hidden">
-              <SchematicRouteMap
-                selectedService={selectedService}
-                currentStopCode={currentStop.code}
-                onSetAlightAlarm={handleSetAlightAlarm}
-                activeAlightAlarmStop={activeAlightStop?.stopCode || null}
-              />
-            </div>
           </div>
-        ) : viewMode === 'tablet' ? (
-          /* Tablet Split-View (Fixed 380px left list + Schematic right) */
-          <div className="grid grid-cols-12 gap-3 h-[calc(100vh-80px)]">
-            {/* Left 380px Transit Master Feed */}
-            <div className="col-span-5 flex flex-col gap-3 overflow-hidden">
-              <div className="bg-white border border-[#cbd5e1] rounded p-3 shadow-xs shrink-0">
-                <BusStopSelector
-                  stops={stops}
-                  selectedStop={currentStop}
-                  onSelectStop={(stop) => {
-                    setSelectedStopCode(stop.code);
-                    if (stop.services.length > 0) setSelectedService(stop.services[0]);
-                  }}
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  activeFilter={activeFilter}
-                  onFilterChange={setActiveFilter}
-                  favoritesCount={favorites.length}
-                  direction={direction}
-                  onDirectionToggle={() => setDirection((d) => (d === 1 ? 2 : 1))}
-                />
-              </div>
+        )}
 
-              {/* Arrival Cards */}
-              <div className="bg-white border border-[#cbd5e1] rounded p-3 shadow-xs flex-1 overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-2 mb-2 sticky top-0 bg-white z-10">
-                  <div>
-                    <h3 className="text-xs font-bold text-[#0f172a] uppercase tracking-wide">
-                      Live Timing Board
-                    </h3>
-                    <p className="text-[10px] text-[#64748b] font-mono">
-                      {currentStop.code} · {currentStop.name}
-                    </p>
-                  </div>
-                  <span className="font-mono text-[10px] text-[#0f172a] font-bold bg-[#eff4ff] px-1.5 py-0.5 rounded border border-[#d5e3fc]">
-                    {filteredServices.length} Lines
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  {filteredServices.map((svc) => (
-                    <ArrivalCard
-                      key={svc.serviceNo}
-                      service={svc}
-                      isFavorite={favorites.includes(svc.serviceNo)}
-                      onToggleFavorite={toggleFavorite}
-                      isSelected={selectedService?.serviceNo === svc.serviceNo}
-                      onSelect={(s) => setSelectedService(s)}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right Dedicated Schematic Route Diagram */}
-            <div className="col-span-7 h-full overflow-hidden">
-              <SchematicRouteMap
-                selectedService={selectedService}
-                currentStopCode={currentStop.code}
-                onSetAlightAlarm={handleSetAlightAlarm}
-                activeAlightAlarmStop={activeAlightAlarmStopCode()}
-              />
-            </div>
+        {/* Tab View: Route Progression */}
+        {activeTab === 'route' && (
+          <div className="max-w-2xl mx-auto h-[680px]">
+            <SchematicRouteMap
+              selectedService={selectedService}
+              currentStopCode={currentStop.code}
+              onSetAlightAlarm={handleSetAlightAlarm}
+              activeAlightAlarmStop={activeAlightStop?.stopCode || null}
+            />
           </div>
-        ) : (
-          /* Desktop Concierge / Auto Responsive (3-Column Triage on >1024px) */
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
-            {/* Column 1: Active Line & Bus Stop Selector (3 cols on lg) */}
-            <div className="lg:col-span-3 space-y-3">
-              <div className="bg-white border border-[#cbd5e1] rounded p-3 sm:p-3.5 shadow-xs">
-                <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-2 mb-2.5">
-                  <div className="flex items-center gap-1.5">
-                    <Compass className="w-4 h-4 text-[#0f172a]" />
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#0f172a]">
-                      Station Navigator
-                    </h2>
-                  </div>
-                  <span className="font-mono text-[10px] text-[#64748b]">GPS Radar</span>
-                </div>
+        )}
 
-                <BusStopSelector
-                  stops={stops}
-                  selectedStop={currentStop}
-                  onSelectStop={(stop) => {
-                    setSelectedStopCode(stop.code);
-                    if (stop.services.length > 0) setSelectedService(stop.services[0]);
-                  }}
-                  searchQuery={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  activeFilter={activeFilter}
-                  onFilterChange={setActiveFilter}
-                  favoritesCount={favorites.length}
-                  direction={direction}
-                  onDirectionToggle={() => setDirection((d) => (d === 1 ? 2 : 1))}
-                />
-              </div>
-
-              {/* Station Connectivity & Overview Card */}
-              <div className="bg-white border border-[#cbd5e1] rounded p-3 shadow-xs text-xs space-y-2">
-                <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-1.5">
-                  <span className="font-bold text-[#0f172a] uppercase tracking-wide text-[11px]">
-                    Current Stop Telemetry
-                  </span>
-                  <span className="font-mono text-[10px] text-[#166534] font-semibold">
-                    Geolocated
-                  </span>
-                </div>
-
-                <div className="space-y-1 text-[#475569] text-[11px]">
-                  <div className="flex justify-between">
-                    <span>Stop Code:</span>
-                    <span className="font-mono font-bold text-[#0f172a]">{currentStop.code}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Street:</span>
-                    <span className="font-medium text-[#0f172a]">{currentStop.road}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Coordinates:</span>
-                    <span className="font-mono text-[10px]">{currentStop.lat.toFixed(4)}, {currentStop.lng.toFixed(4)}</span>
-                  </div>
-                  {currentStop.mrtConnections && currentStop.mrtConnections.length > 0 && (
-                    <div className="pt-1.5 border-t border-[#e2e8f0] flex items-center justify-between">
-                      <span className="font-semibold text-[#0f172a]">MRT Transfer:</span>
-                      <div className="flex gap-1">
-                        {currentStop.mrtConnections.map((m) => (
-                          <span
-                            key={m.code}
-                            className="font-mono text-[9px] font-bold text-white px-1.5 py-0.5 rounded"
-                            style={{ backgroundColor: m.color }}
-                          >
-                            {m.code}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Column 2: Live Station Arrival Board (6 cols on lg) */}
-            <div className="lg:col-span-5 space-y-3">
-              <div className="bg-white border border-[#cbd5e1] rounded p-3 sm:p-3.5 shadow-xs">
-                {/* Station Hero Header */}
-                <div className="flex items-start justify-between border-b border-[#e2e8f0] pb-2.5 mb-2.5">
-                  <div className="min-w-0 pr-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-bold text-[#0f172a] bg-[#eff4ff] px-2 py-0.5 rounded border border-[#d5e3fc]">
-                        {currentStop.code}
-                      </span>
-                      <h1 className="text-base sm:text-lg font-bold text-[#0f172a] truncate tracking-tight">
-                        {currentStop.name}
-                      </h1>
-                    </div>
-                    <p className="text-xs text-[#64748b] mt-0.5 flex items-center gap-2">
-                      <span>{currentStop.road}</span>
-                      <span>·</span>
-                      <span className="font-mono">{filteredServices.length} Services operating</span>
-                    </p>
-                  </div>
-
-                  {/* Manual Refresh / Auto Counter */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-[10px] font-mono text-[#64748b] bg-[#f8fafc] px-2 py-1 rounded border border-[#e2e8f0]">
-                      Sync {refreshCountdown}s
-                    </span>
-                  </div>
-                </div>
-
-                {/* Arrival Board Telemetry Column Headers */}
-                <div className="hidden sm:flex items-center justify-between text-[10px] font-mono font-bold text-[#64748b] uppercase tracking-wider px-2 py-1 bg-[#f8fafc] border border-[#e2e8f0] rounded mb-1.5">
-                  <span>Service / Route Target</span>
-                  <div className="flex items-center gap-8 pr-4">
-                    <span>Next Bus</span>
-                    <span>2nd Bus</span>
-                    <span>3rd Bus</span>
-                  </div>
-                </div>
-
-                {/* Cards List */}
-                <div className="space-y-1.5">
-                  {filteredServices.length === 0 ? (
-                    <div className="text-center py-10 border border-dashed border-[#cbd5e1] rounded bg-[#f8fafc] p-6">
-                      <Bus className="w-8 h-8 text-[#94a3b8] mx-auto mb-2" />
-                      <p className="text-xs font-semibold text-[#0f172a]">No bus services match filters</p>
-                      <p className="text-[11px] text-[#64748b] mt-1">
-                        Try resetting filters or searching another service number.
-                      </p>
-                      <button
-                        onClick={() => {
-                          setSearchQuery('');
-                          setActiveFilter('all');
-                        }}
-                        className="mt-3 px-3 py-1 rounded bg-[#1e293b] text-white text-xs font-semibold hover:bg-[#0f172a]"
-                      >
-                        Reset All Filters
-                      </button>
-                    </div>
-                  ) : (
-                    filteredServices.map((svc) => (
-                      <ArrivalCard
-                        key={svc.serviceNo}
-                        service={svc}
-                        isFavorite={favorites.includes(svc.serviceNo)}
-                        onToggleFavorite={toggleFavorite}
-                        isSelected={selectedService?.serviceNo === svc.serviceNo}
-                        onSelect={(s) => setSelectedService(s)}
-                      />
-                    ))
-                  )}
-                </div>
-
-                {/* Civic Legend Reminder */}
-                <div className="mt-3 pt-2.5 border-t border-[#e2e8f0] flex items-center justify-between text-[11px] text-[#64748b]">
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1 font-mono text-[10px]">
-                      <span className="w-2 h-2 rounded-full bg-[#3f6253]"></span> SEA
-                    </span>
-                    <span className="flex items-center gap-1 font-mono text-[10px]">
-                      <span className="w-2 h-2 rounded-full bg-[#b45309]"></span> SDA
-                    </span>
-                    <span className="flex items-center gap-1 font-mono text-[10px]">
-                      <span className="w-2 h-2 rounded-full bg-[#991b1b]"></span> LSD
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setIsLegendOpen(true)}
-                    className="font-medium text-[#005ec4] hover:underline"
-                  >
-                    View Full Telemetry Standards
-                  </button>
-                </div>
-              </div>
-
-              {/* Responsive Route inspection view for smaller screens */}
-              <div className="block xl:hidden">
-                <SchematicRouteMap
-                  selectedService={selectedService}
-                  currentStopCode={currentStop.code}
-                  onSetAlightAlarm={handleSetAlightAlarm}
-                  activeAlightAlarmStop={activeAlightStop?.stopCode || null}
-                />
-              </div>
-            </div>
-
-            {/* Column 3: Schematic Route Progress & Incident Matrix (4 cols on lg) */}
-            <div className="lg:col-span-4 space-y-3">
-              {/* Schematic Map (Visible on large screens) */}
-              <div className="hidden xl:block h-[440px]">
-                <SchematicRouteMap
-                  selectedService={selectedService}
-                  currentStopCode={currentStop.code}
-                  onSetAlightAlarm={handleSetAlightAlarm}
-                  activeAlightAlarmStop={activeAlightStop?.stopCode || null}
-                />
-              </div>
-
-              {/* MRT Incident & Commuter Capacity Matrix */}
-              <RailIncidentMatrix
-                railLines={RAIL_LINES_STATUS}
-                advisories={COMMUTER_ADVISORIES}
-              />
-            </div>
+        {/* Tab View: MRT & Alerts */}
+        {activeTab === 'mrt' && (
+          <div className="max-w-2xl mx-auto">
+            <RailIncidentMatrix
+              railLines={RAIL_LINES_STATUS}
+              advisories={COMMUTER_ADVISORIES}
+            />
           </div>
         )}
       </main>
 
-      {/* Telemetry Standards Modal */}
+      {/* Mobile Bottom Navigation Bar (Thumb Reach) */}
+      <BottomNavBar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        serviceCount={filteredServices.length}
+        hasIncidentAlert={RAIL_LINES_STATUS.some((l) => l.status !== 'Normal')}
+      />
+
+      {/* Quick Search Command Palette */}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        stops={stops}
+        onSelectStop={(stop) => {
+          setSelectedStopCode(stop.code);
+          if (stop.services.length > 0) setSelectedService(stop.services[0]);
+          setActiveTab('board');
+        }}
+        onSelectService={(service) => {
+          setSelectedService(service);
+          setActiveTab('board');
+        }}
+      />
+
+      {/* Telemetry Standards & Guide Modal */}
       <LegendModal
         isOpen={isLegendOpen}
         onClose={() => setIsLegendOpen(false)}
@@ -585,8 +459,4 @@ export default function App() {
       />
     </div>
   );
-
-  function activeAlightAlarmStopCode() {
-    return activeAlightStop?.stopCode || null;
-  }
 }

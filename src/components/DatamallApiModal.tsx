@@ -71,29 +71,29 @@ export const DatamallApiModal: React.FC<DatamallApiModalProps> = ({ isOpen, onCl
   const isKeyConfigured = healthData?.datamall?.accountKeyConfigured;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-4 backdrop-blur-xs">
       <div 
-        className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-lg border border-[#cbd5e1] bg-white shadow-xl text-[#0b1c30] overflow-hidden"
+        className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl border border-zinc-200 bg-white shadow-2xl text-zinc-900 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-[#e2e8f0] px-5 py-3.5 bg-[#f8fafc]">
+        <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-3.5 bg-zinc-50/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded bg-[#091426] text-white flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center">
               <Server className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#0f172a] uppercase tracking-wide">
-                LTA Datamall Serverless Connection
+              <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wide">
+                LTA Datamall Connection Settings
               </h3>
-              <p className="text-[10px] text-[#64748b] font-mono">
-                /api/health.ts & /api/bustracker.ts
+              <p className="text-[10px] text-zinc-500 font-mono">
+                Serverless Proxy at /api/bustracker
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded border border-[#cbd5e1] flex items-center justify-center text-[#64748b] hover:bg-[#f1f5f9]"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
           >
             <X className="w-4 h-4" />
           </button>

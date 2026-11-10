@@ -44,28 +44,28 @@ export const AlightNotificationModal: React.FC<AlightNotificationModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 p-4 backdrop-blur-xs">
       <div 
-        className="w-full max-w-md rounded-lg border border-[#cbd5e1] bg-white p-5 shadow-xl text-[#0b1c30]"
+        className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-5 shadow-2xl text-zinc-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-3 mb-3">
+        <div className="flex items-center justify-between border-b border-zinc-100 pb-3 mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded bg-[#fffbeb] border border-[#fde68a] flex items-center justify-center text-[#b45309]">
+            <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
               <Bell className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#0f172a] uppercase tracking-wide">
-                Active Alight Reminder
+              <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wide">
+                Alight Reminder
               </h3>
-              <p className="text-[10px] text-[#64748b] font-mono">
-                TELEMETRY GEOFENCE ACTIVE
+              <p className="text-[10px] text-zinc-400 font-mono">
+                Proximity Alert
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded border border-[#cbd5e1] flex items-center justify-center text-[#64748b] hover:bg-[#f1f5f9]"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
           >
             <X className="w-4 h-4" />
           </button>
